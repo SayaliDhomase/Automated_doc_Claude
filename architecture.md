@@ -36,10 +36,14 @@ POSIX, in both a human-readable CLI mode and a CI-hookable JSON mode.
   `argv` and the three named environment variables (`DOC_SYNC_TEMPLATE_PATH`,
   `DOC_SYNC_SOURCE_REPO_PATH`, `DOC_SYNC_OUTPUT_PATH`) — FR-1/FR-9. When both a CLI flag and
   the corresponding env var are given for the same setting, **the CLI flag wins** (explicit
-  over implicit). Enforces NFR-3 **before any file I/O**: the only accepted non-secret flags
-  are `--template`, `--repo`, `--output`, and `--ci`; any other flag — including anything
-  matching a secret-indicating name pattern (`token`, `secret`, `key`, `password`,
-  `credential`, case-insensitive) — is rejected, and the rejection message names only the
+  over implicit). Enforces NFR-3 **before any file I/O, and before `commander`'s own argument
+  parsing runs**: raw `argv` is pre-scanned against a fixed allow-list — `--template`,
+  `--repo`, `--output`, `--ci`, plus `commander`'s standard meta-flags `--help`/`-h` and
+  `--version`/`-V` (explicitly included so basic CLI usability isn't broken by the NFR-3
+  check) — and anything else, including anything matching a secret-indicating name pattern
+  (`token`, `secret`, `key`, `password`, `credential`, case-insensitive), is rejected before
+  `commander` ever sees it, so `commander`'s own default unknown-option handling never fires
+  and never produces an uncontrolled error message. The rejection message names only the
   flag, never a value. Reads **only** its three named env
   vars by exact key — it never enumerates or logs `process.env` as a whole, which is what
   actually keeps unrelated secrets (e.g. this pipeline's own `JIRA_API_TOKEN`, present in the
@@ -82,7 +86,11 @@ POSIX, in both a human-readable CLI mode and a CI-hookable JSON mode.
   example). A missing *individual* evidence file is not an error here; it simply means that
   field's lookup rule finds nothing and resolves `"Not Found"` — this is how FR-8(b)'s
   empty/partial-repository behavior falls directly out of normal extractor logic rather than
-  being a separate code path that could drift out of sync with the happy path.
+  being a separate code path that could drift out of sync with the happy path. **Deterministic
+  tie-breaking**: where a lookup rule has multiple candidate evidence files (e.g. more than one
+  file under `.github/workflows/*.yml`), candidates are sorted lexicographically by filename
+  before the rule picks one, so the result never depends on OS directory-iteration order
+  (NFR-2).
 - **Exposes**: implements `Extractor`.
 - **Depends on**: filesystem (read-only).
 
@@ -92,7 +100,13 @@ POSIX, in both a human-readable CLI mode and a CI-hookable JSON mode.
   classify the result into exactly one of `Found | "Not Found" | "Not Specified"` (FR-4),
   reading the extractor's static "Not Specified" set (not asking the extractor to decide
   per-call) so the Field Resolution Rule safeguard is enforced structurally in core code,
-  independent of which extractor is active.
+  independent of which extractor is active. **Contains errors per field**: each field's
+  extractor lookup runs inside its own catch boundary — an unexpected error reading one
+  specific evidence file (e.g. a permission error on a single file in an otherwise-accessible
+  repository) resolves that one field to `"Not Found"` (with an internal diagnostic note),
+  never the whole run. True tool-level failures are reserved for the three FR-8(a) cases,
+  which are checked once, up front, before field-by-field resolution begins — not raised as a
+  side effect of an individual field lookup.
 - **Exposes**: `resolveFields(template, extractor): ResolvedManifest`.
 - **Depends on**: the `Extractor` interface only, never a concrete extractor module.
 
@@ -113,7 +127,11 @@ POSIX, in both a human-readable CLI mode and a CI-hookable JSON mode.
   every field resolved to exactly one of {value, "Not Found", "Not Specified"} with none
   blank/null (AC-11), and every "found" value traceable to the evidence reference the extractor
   attached (AC-6) — checked against the structured `ResolvedManifest`, not by re-parsing the
-  rendered text.
+  rendered text. **Limitation**: this validator confirms an evidence pointer is *present* for
+  every found value; it does not independently re-verify that the pointer is *accurate*. Full
+  AC-6 compliance (no invented values) ultimately depends on each extractor's lookup-rule
+  correctness, verified via Stage 6 Code Review and targeted tests — not a generic runtime
+  guarantee this validator alone can provide.
 - **Exposes**: `validateOutput(resolvedManifest, renderedText): ValidationResult`.
 - **Depends on**: nothing.
 
@@ -273,6 +291,15 @@ pipeline level) but is not wired into this tool.
   this tool has no use for it.
 - **Write confinement**: the only files this tool ever writes are the configured output path
   and its co-located temporary file during replacement — nothing else, ever.
+- **Accepted risk — secrets committed in the documented repository**: the Node.js/TypeScript
+  Extractor reads `Dockerfile` and CI workflow YAML from the repository *being documented*. If
+  that repository has a credential hardcoded in one of those files (e.g. `ENV API_KEY=...`, or
+  a literal token in a workflow step), the extractor will treat it as evidence and the Output
+  Renderer will copy it into the generated manifest. `requirements.md`'s Out-of-Scope section
+  deliberately excludes building a general secret-scanning engine for arbitrary content — this
+  note exists so that scope decision is visible here too, not only in `requirements.md`. Users
+  running this tool against a repository with poor secret hygiene should expect that exposure
+  to be reflected in the generated manifest.
 
 ## Configuration
 
