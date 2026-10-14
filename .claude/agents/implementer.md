@@ -20,7 +20,7 @@ design.
 ## While Implementing
 
 - Follow `CLAUDE.md` coding conventions (TypeScript, ESM, no speculative abstractions, no
-  dead code, comments explain *why* only).
+  dead code, comments explain _why_ only).
 - Write or update unit tests alongside the code, in `tests/unit/`; add integration tests in
   `tests/integration/` for cross-component flows. Use the fixtures under `tests/fixtures/`
   (missing-fields, empty-repo, malformed-template, api-failure, happy-path) rather than

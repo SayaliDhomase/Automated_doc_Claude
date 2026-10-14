@@ -20,6 +20,7 @@ to make sure each task's verification approach is defined up front.
 ## Per-Task Fields
 
 For every task, record:
+
 - Short title and description
 - Dependencies / prerequisite tasks (by ID)
 - Affected files or components (best estimate, from `architecture.md`)

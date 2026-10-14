@@ -11,7 +11,7 @@ the first time — not confirming the author's own assumptions.
 ### Finding 1 — Major — Flag allow-list as stated would reject `--help`/`--version`
 
 - **Location**: `architecture.md`, Config Loader component + "Decisions Confirmed" section.
-- **Evidence**: NFR-3's confirmed allow-list is stated as *exactly* `--template`, `--repo`,
+- **Evidence**: NFR-3's confirmed allow-list is stated as _exactly_ `--template`, `--repo`,
   `--output`, `--ci`. `commander` (the chosen CLI library) provides `--help`/`-h` and
   `--version`/`-V` by default. As written, a fail-closed check against that exact allow-list
   would reject `doc-sync --help` as an unrecognized/potentially-secret flag — breaking basic
@@ -30,10 +30,10 @@ the first time — not confirming the author's own assumptions.
 - **Location**: `architecture.md`, Field Resolver + Error-Handling Strategy table.
 - **Evidence**: the Error-Handling table's only catch-all is "any unhandled exception ...
   top-level `try/catch` in the CLI Entry Point ... generic tool-level failure exit." There is
-  no stated behavior for an unexpected error on a *single* field's extraction (e.g.
+  no stated behavior for an unexpected error on a _single_ field's extraction (e.g.
   permission-denied reading one specific evidence file in an otherwise fully accessible,
   non-empty repository). As designed, that single-field error would propagate all the way to
-  the top-level catch and fail the *entire* run with no manifest produced — even though nine
+  the top-level catch and fail the _entire_ run with no manifest produced — even though nine
   other fields may have resolved just fine.
 - **Impact**: contradicts the spirit of FR-8(b)/NFR-1 (evidence-absence should degrade
   gracefully to "Not Found," not fail the whole run) even though it technically satisfies the
@@ -47,7 +47,7 @@ the first time — not confirming the author's own assumptions.
 
 - **Location**: `architecture.md`, Security Boundaries section (currently silent on this).
 - **Evidence**: the Node.js/TypeScript Extractor reads `Dockerfile` and CI workflow YAML files
-  from the repository being *documented*. If that repository has a credential hardcoded in one
+  from the repository being _documented_. If that repository has a credential hardcoded in one
   of those files (e.g. `ENV API_KEY=...` in a `Dockerfile`, or a literal token in a workflow
   step), the extractor would faithfully treat it as evidence and the Output Renderer would
   copy it into the generated manifest. `requirements.md`'s Out-of-Scope section already and
@@ -73,7 +73,7 @@ the first time — not confirming the author's own assumptions.
 ### Finding 5 — Minor/Note — Output Validator's AC-6 check verifies presence, not accuracy
 
 - **Location**: `architecture.md`, Output Validator.
-- **Evidence**: as designed, the validator confirms a "found" value *has* an attached evidence
+- **Evidence**: as designed, the validator confirms a "found" value _has_ an attached evidence
   pointer — it doesn't independently re-verify that the pointer is correct. True AC-6
   compliance (no invented values) ultimately depends on each extractor's lookup-rule
   correctness, verified via Code Review and targeted tests, not a generic runtime guarantee.
@@ -94,13 +94,13 @@ the first time — not confirming the author's own assumptions.
 
 ## Severity Summary
 
-| # | Severity | Area | Disposition |
-|---|---|---|---|
-| 1 | Major | CLI usability / NFR-3 | **Fixed** in architecture.md |
-| 2 | Major | Reliability (NFR-1/FR-8(b)) | **Fixed** in architecture.md |
-| 3 | Major (Accepted-Risk candidate) | Security | **Accepted Risk** — documented |
-| 4 | Minor | Determinism (NFR-2) | **Fixed** in architecture.md |
-| 5 | Minor/Note | Validation clarity (AC-6) | **Fixed** in architecture.md |
+| #   | Severity                        | Area                        | Disposition                    |
+| --- | ------------------------------- | --------------------------- | ------------------------------ |
+| 1   | Major                           | CLI usability / NFR-3       | **Fixed** in architecture.md   |
+| 2   | Major                           | Reliability (NFR-1/FR-8(b)) | **Fixed** in architecture.md   |
+| 3   | Major (Accepted-Risk candidate) | Security                    | **Accepted Risk** — documented |
+| 4   | Minor                           | Determinism (NFR-2)         | **Fixed** in architecture.md   |
+| 5   | Minor/Note                      | Validation clarity (AC-6)   | **Fixed** in architecture.md   |
 
 ## Unresolved Blockers vs. Accepted Risks
 

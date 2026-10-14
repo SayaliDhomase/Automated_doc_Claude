@@ -1,6 +1,6 @@
 ---
-description: "Stage 3 — critically review architecture.md and produce design-review.md via the design-reviewer agent"
-argument-hint: "[optional: specific area to focus the review on]"
+description: 'Stage 3 — critically review architecture.md and produce design-review.md via the design-reviewer agent'
+argument-hint: '[optional: specific area to focus the review on]'
 allowed-tools: Task, Read, Write, Edit, Grep, Glob
 ---
 
@@ -13,6 +13,7 @@ severity-rated findings.
 (e.g. "focus on the Jira integration boundary").
 
 **Steps**:
+
 1. Delegate to the `design-reviewer` subagent with `architecture.md` and `requirements.md`.
 2. Present findings grouped by severity. For each `Blocker`/`Major` finding, ask the user:
    fix it now (agent applies an approved edit to `architecture.md`), accept the risk

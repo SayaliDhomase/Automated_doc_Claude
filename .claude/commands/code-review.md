@@ -1,6 +1,6 @@
 ---
-description: "Stage 6 — structured code review across correctness, security, error handling, tests, clarity, DRY, dependencies, architecture compliance, and documentation quality"
-argument-hint: "[optional: specific files/components to focus on]"
+description: 'Stage 6 — structured code review across correctness, security, error handling, tests, clarity, DRY, dependencies, architecture compliance, and documentation quality'
+argument-hint: '[optional: specific files/components to focus on]'
 allowed-tools: Task, Read, Grep, Glob, Bash, Edit
 ---
 
@@ -13,6 +13,7 @@ allowed-tools: Task, Read, Grep, Glob, Bash, Edit
 review.
 
 **Steps**:
+
 1. Delegate to the `code-reviewer` subagent.
 2. Present findings by severity. For each, ask the user: fix now (agent applies edit and
    reruns the relevant check), or explicitly accept and document.

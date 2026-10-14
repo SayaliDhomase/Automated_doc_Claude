@@ -32,8 +32,9 @@ report that PR preparation is blocked.
 ## Git Hosting
 
 Check whether `gh` (or configured Git-hosting MCP tools) is available and authenticated.
+
 - If yes **and** the human explicitly authorizes it in this turn: create the PR via `gh pr
-  create` (or the MCP equivalent) using the prepared description. Never push or create a PR
+create` (or the MCP equivalent) using the prepared description. Never push or create a PR
   without that explicit authorization, even if earlier stages were approved.
 - If no, or authorization isn't given: save the PR description as a local file (e.g.
   `pr-description.md`), state plainly what's missing (CLI/auth/MCP), and list the exact manual

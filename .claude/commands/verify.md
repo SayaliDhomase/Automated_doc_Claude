@@ -1,5 +1,5 @@
 ---
-description: "Stage 7 — run the full verification suite and produce verification-report.md from real command output"
+description: 'Stage 7 — run the full verification suite and produce verification-report.md from real command output'
 argument-hint: "[optional: subset to run, e.g. 'unit' or 'docs-validation']"
 allowed-tools: Task, Read, Write, Bash, Grep, Glob
 ---
@@ -12,6 +12,7 @@ allowed-tools: Task, Read, Write, Bash, Grep, Glob
 `$ARGUMENTS` to run a subset.
 
 **Steps**:
+
 1. Delegate to the `verifier` subagent to run all mandatory checks listed in
    `skills/test-strategy/SKILL.md` (unit, integration, doc-sync edge cases, security/dependency
    checks, static analysis, output-document validation, regression tests).

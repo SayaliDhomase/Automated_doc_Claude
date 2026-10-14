@@ -10,14 +10,14 @@ POSIX, in both a human-readable CLI mode and a CI-hookable JSON mode.
 
 ## Technology Stack
 
-| Decision | Choice | Why | Alternatives Considered |
-|---|---|---|---|
-| Language/runtime | Node.js ≥ 20 + TypeScript | Matches the confirmed v1 scope decision (Node/TS is the only extractor shipped); already scaffolded in this repo; Node's `fs` module gives the cross-platform primitives FR-10 needs | Python (capable, but duplicates a toolchain already set up and doesn't match the confirmed extractor target); Go (good single-binary CLI story, but introduces a second language into the repo with no justified need) |
-| CLI argument parsing | `commander` (already a dependency) | Simple, well-known; supports building the explicit flag allow-list NFR-3 requires | `yargs` (comparable, no added benefit); hand-rolled parsing (more error-prone for the allow-list/rejection logic that must be correct) |
-| Template parsing | Custom line-oriented parser (headings = sections, `- **Field**: value` bullets = fields) | Required to guarantee byte-exact structural preservation (FR-5) and determinism (NFR-2) — rewriting only field values in place, never re-serializing the whole document | A general Markdown AST library (`remark`/`markdown-it`): robust for arbitrary Markdown, but re-serialization is not guaranteed to reproduce the original byte-for-byte, which risks FR-5/NFR-2; also a heavier dependency for a narrowly-shaped template format |
-| `.env`/config loading | Small internal parser (no new dependency) | Keeps full control over exactly what is read and what is ever logged — directly supports NFR-3's guarantee; `.env` syntax used here is trivial (`KEY=VALUE` lines) | `dotenv` package: common, but outsources the one piece of logic (what gets read/exposed) we most need to control and audit ourselves |
-| Validation | `zod` (already a dependency) | Validates in-memory structures (`Config`, `ResolvedManifest`, `RunResult`/CI JSON shape) against drift from the TypeScript types | Manual type guards (more code, higher risk of validation and types silently diverging) |
-| Testing | `vitest` (already configured) | Already set up in scaffolding | `jest` (comparable; no reason to switch) |
+| Decision              | Choice                                                                                   | Why                                                                                                                                                                                  | Alternatives Considered                                                                                                                                                                                                                                         |
+| --------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Language/runtime      | Node.js ≥ 20 + TypeScript                                                                | Matches the confirmed v1 scope decision (Node/TS is the only extractor shipped); already scaffolded in this repo; Node's `fs` module gives the cross-platform primitives FR-10 needs | Python (capable, but duplicates a toolchain already set up and doesn't match the confirmed extractor target); Go (good single-binary CLI story, but introduces a second language into the repo with no justified need)                                          |
+| CLI argument parsing  | `commander` (already a dependency)                                                       | Simple, well-known; supports building the explicit flag allow-list NFR-3 requires                                                                                                    | `yargs` (comparable, no added benefit); hand-rolled parsing (more error-prone for the allow-list/rejection logic that must be correct)                                                                                                                          |
+| Template parsing      | Custom line-oriented parser (headings = sections, `- **Field**: value` bullets = fields) | Required to guarantee byte-exact structural preservation (FR-5) and determinism (NFR-2) — rewriting only field values in place, never re-serializing the whole document              | A general Markdown AST library (`remark`/`markdown-it`): robust for arbitrary Markdown, but re-serialization is not guaranteed to reproduce the original byte-for-byte, which risks FR-5/NFR-2; also a heavier dependency for a narrowly-shaped template format |
+| `.env`/config loading | Small internal parser (no new dependency)                                                | Keeps full control over exactly what is read and what is ever logged — directly supports NFR-3's guarantee; `.env` syntax used here is trivial (`KEY=VALUE` lines)                   | `dotenv` package: common, but outsources the one piece of logic (what gets read/exposed) we most need to control and audit ourselves                                                                                                                            |
+| Validation            | `zod` (already a dependency)                                                             | Validates in-memory structures (`Config`, `ResolvedManifest`, `RunResult`/CI JSON shape) against drift from the TypeScript types                                                     | Manual type guards (more code, higher risk of validation and types silently diverging)                                                                                                                                                                          |
+| Testing               | `vitest` (already configured)                                                            | Already set up in scaffolding                                                                                                                                                        | `jest` (comparable; no reason to switch)                                                                                                                                                                                                                        |
 
 ## Components
 
@@ -25,7 +25,7 @@ POSIX, in both a human-readable CLI mode and a CI-hookable JSON mode.
 
 - **Responsibility**: parse `argv`, hand off to Config Loader, invoke the Sync Orchestrator,
   select the Human or CI Presenter based on mode, map the final `RunResult.status` to the
-  process exit code (the *only* place this mapping happens, so CLI and CI modes can't drift),
+  process exit code (the _only_ place this mapping happens, so CLI and CI modes can't drift),
   and wrap everything in a top-level `try/catch` so no unexpected error ever reaches the user
   as a raw stack trace (NFR-1).
 - **Depends on**: Config Loader, Sync Orchestrator, Presenters.
@@ -65,7 +65,7 @@ POSIX, in both a human-readable CLI mode and a CI-hookable JSON mode.
 
 - **Responsibility**: define the `Extractor` contract — for a given field, return
   `{status: 'found', value, evidence}`, `{status: 'not-found'}`, or `{status:
-  'not-specified'}` — and expose each extractor's **fixed, statically-declared** set of
+'not-specified'}` — and expose each extractor's **fixed, statically-declared** set of
   "Not Specified" fields (the Field Resolution Rule safeguard from `requirements.md`: this set
   is a static property of the extractor, never computed dynamically per run, so it structurally
   cannot be used to skip an evidence check). The Registry selects the active extractor for a
@@ -83,7 +83,7 @@ POSIX, in both a human-readable CLI mode and a CI-hookable JSON mode.
   assumption-flagged evidence list) and defines a lookup rule per template field. Declares its
   fixed "Not Specified" set — in v1, just `"Owning Team"` (no code artifact in this list can
   structurally answer an organizational/people question — see `requirements.md`'s worked
-  example). A missing *individual* evidence file is not an error here; it simply means that
+  example). A missing _individual_ evidence file is not an error here; it simply means that
   field's lookup rule finds nothing and resolves `"Not Found"` — this is how FR-8(b)'s
   empty/partial-repository behavior falls directly out of normal extractor logic rather than
   being a separate code path that could drift out of sync with the happy path. **Deterministic
@@ -127,8 +127,8 @@ POSIX, in both a human-readable CLI mode and a CI-hookable JSON mode.
   every field resolved to exactly one of {value, "Not Found", "Not Specified"} with none
   blank/null (AC-11), and every "found" value traceable to the evidence reference the extractor
   attached (AC-6) — checked against the structured `ResolvedManifest`, not by re-parsing the
-  rendered text. **Limitation**: this validator confirms an evidence pointer is *present* for
-  every found value; it does not independently re-verify that the pointer is *accurate*. Full
+  rendered text. **Limitation**: this validator confirms an evidence pointer is _present_ for
+  every found value; it does not independently re-verify that the pointer is _accurate_. Full
   AC-6 compliance (no invented values) ultimately depends on each extractor's lookup-rule
   correctness, verified via Stage 6 Code Review and targeted tests — not a generic runtime
   guarantee this validator alone can provide.
@@ -141,7 +141,7 @@ POSIX, in both a human-readable CLI mode and a CI-hookable JSON mode.
   directory as the destination (so a same-volume rename is possible on both POSIX and
   Windows), attempts the safest replacement operation available, retries **up to 3 times with
   a short backoff** on a transient lock (e.g. Windows `EBUSY`), and on persistent failure
-  reports a tool-level failure *without* touching the existing destination file. Guarantees the
+  reports a tool-level failure _without_ touching the existing destination file. Guarantees the
   temp file is deleted in every outcome — success, validation failure (never even attempted),
   or replacement failure.
 - **Exposes**: `safeReplace(content, destinationPath): Promise<void>` (throws
@@ -258,23 +258,23 @@ sequenceDiagram
 **None in v1.** This application reads only local files (master template, source repository)
 and writes only a local output file — no Jira, Confluence, or Git-hosting access at runtime,
 per the confirmed v1 scope decision in `requirements.md`. Note the distinction already
-recorded there: Jira/Confluence/Word as a *user-story source* applies to the broader pipeline's
+recorded there: Jira/Confluence/Word as a _user-story source_ applies to the broader pipeline's
 Stage 1 (gathering the requirement itself), not to this application's own template/repo inputs.
 Future remote-repository access is a documented possibility (see `mcp/README.md` at the
 pipeline level) but is not wired into this tool.
 
 ## Error-Handling Strategy
 
-| Boundary | Failure mode | Behavior |
-|---|---|---|
-| CLI argument parsing | Secret-shaped or unrecognized flag | Fail closed before any I/O; error names the flag, never its value (NFR-3) |
-| Template file read | Missing/unreadable path | FR-8(a) failure: `TEMPLATE_NOT_FOUND`, non-zero exit, existing output untouched |
-| Template parse | Malformed structure | FR-8(a) failure: `TEMPLATE_MALFORMED` with location, non-zero exit |
-| Repository path access | Missing/inaccessible path | FR-8(a) failure: `REPO_NOT_FOUND`, non-zero exit |
-| Repository evidence files | Individual file missing (empty/partial repo) | Not an error — field resolves `"Not Found"` (FR-8(b)); run succeeds, exit 0 |
-| Output validation | Rendered output fails structural/completeness check | Treated as a generation failure; nothing written to the output path |
-| Output replacement | Destination locked / cross-volume / transient OS error | Up to 3 retries with a short backoff, then a tool-level failure if still blocked; existing file preserved, temp file cleaned up (FR-10/AC-13) |
-| Any unhandled exception | Unanticipated error anywhere in the pipeline | Top-level `try/catch` in the CLI Entry Point converts it to a generic tool-level failure exit — never an unhandled crash (NFR-1) |
+| Boundary                  | Failure mode                                           | Behavior                                                                                                                                      |
+| ------------------------- | ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| CLI argument parsing      | Secret-shaped or unrecognized flag                     | Fail closed before any I/O; error names the flag, never its value (NFR-3)                                                                     |
+| Template file read        | Missing/unreadable path                                | FR-8(a) failure: `TEMPLATE_NOT_FOUND`, non-zero exit, existing output untouched                                                               |
+| Template parse            | Malformed structure                                    | FR-8(a) failure: `TEMPLATE_MALFORMED` with location, non-zero exit                                                                            |
+| Repository path access    | Missing/inaccessible path                              | FR-8(a) failure: `REPO_NOT_FOUND`, non-zero exit                                                                                              |
+| Repository evidence files | Individual file missing (empty/partial repo)           | Not an error — field resolves `"Not Found"` (FR-8(b)); run succeeds, exit 0                                                                   |
+| Output validation         | Rendered output fails structural/completeness check    | Treated as a generation failure; nothing written to the output path                                                                           |
+| Output replacement        | Destination locked / cross-volume / transient OS error | Up to 3 retries with a short backoff, then a tool-level failure if still blocked; existing file preserved, temp file cleaned up (FR-10/AC-13) |
+| Any unhandled exception   | Unanticipated error anywhere in the pipeline           | Top-level `try/catch` in the CLI Entry Point converts it to a generic tool-level failure exit — never an unhandled crash (NFR-1)              |
 
 ## Security Boundaries
 
@@ -286,13 +286,13 @@ pipeline level) but is not wired into this tool.
   this tool, since there is nothing to call out to.
 - **Secret containment**: the Config Loader reads only its three named env vars by exact key
   and never enumerates or logs `process.env` as a whole — this is what prevents an unrelated
-  secret already present in a shared `.env` (e.g. this *pipeline's* own `JIRA_API_TOKEN`, used
+  secret already present in a shared `.env` (e.g. this _pipeline's_ own `JIRA_API_TOKEN`, used
   by other stages) from ever being able to leak through this tool's output or logs, even though
   this tool has no use for it.
 - **Write confinement**: the only files this tool ever writes are the configured output path
   and its co-located temporary file during replacement — nothing else, ever.
 - **Accepted risk — secrets committed in the documented repository**: the Node.js/TypeScript
-  Extractor reads `Dockerfile` and CI workflow YAML from the repository *being documented*. If
+  Extractor reads `Dockerfile` and CI workflow YAML from the repository _being documented_. If
   that repository has a credential hardcoded in one of those files (e.g. `ENV API_KEY=...`, or
   a literal token in a workflow step), the extractor will treat it as evidence and the Output
   Renderer will copy it into the generated manifest. `requirements.md`'s Out-of-Scope section
@@ -303,12 +303,12 @@ pipeline level) but is not wired into this tool.
 
 ## Configuration
 
-| Setting | Env var | CLI flag | Notes |
-|---|---|---|---|
-| Template path | `DOC_SYNC_TEMPLATE_PATH` | `--template` | CLI flag overrides env var if both given |
-| Source repo path | `DOC_SYNC_SOURCE_REPO_PATH` | `--repo` | Same precedence rule |
-| Output path | `DOC_SYNC_OUTPUT_PATH` | `--output` | Same precedence rule |
-| CI mode | — | `--ci` | Explicit flag selects the FR-11 JSON-summary mode (not TTY-detection) |
+| Setting          | Env var                     | CLI flag     | Notes                                                                 |
+| ---------------- | --------------------------- | ------------ | --------------------------------------------------------------------- |
+| Template path    | `DOC_SYNC_TEMPLATE_PATH`    | `--template` | CLI flag overrides env var if both given                              |
+| Source repo path | `DOC_SYNC_SOURCE_REPO_PATH` | `--repo`     | Same precedence rule                                                  |
+| Output path      | `DOC_SYNC_OUTPUT_PATH`      | `--output`   | Same precedence rule                                                  |
+| CI mode          | —                           | `--ci`       | Explicit flag selects the FR-11 JSON-summary mode (not TTY-detection) |
 
 No secret configuration is required by this tool in v1 (it has no integrations); NFR-3's
 rejection logic exists defensively, as explained under Security Boundaries.

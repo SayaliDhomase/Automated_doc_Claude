@@ -25,16 +25,19 @@ mandatory checks passing (or documented human-accepted exceptions).
 {{2–3 sentences: what was built and why}}
 
 ## Changes Made
+
 - `{{path}}` — {{reason}}
 
 ## Test Evidence
 {{actual output pulled from verification-report.md; link real CI run only if one exists}}
 
 ## Known Limitations
+
 - {{fields marked "Not Found"/"Not Specified", unresolved issues, unavailable integrations,
   out-of-scope items}}
 
 ## Reviewer Checklist
+
 - [ ] Meets requirements.md acceptance criteria
 - [ ] Matches approved architecture.md
 - [ ] No secrets/credentials introduced

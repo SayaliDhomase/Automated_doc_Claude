@@ -14,16 +14,16 @@ for any user story, repository, and tech stack handed to it.
 
 ## Stage → Subagent Map
 
-| # | Stage | Subagent | Produces |
-|---|-------|----------|----------|
-| 1 | Requirements | `requirements-analyst` | `requirements.md` |
-| 2 | Architecture | `architect` | `architecture.md` |
-| 3 | Design Review | `design-reviewer` | `design-review.md` (+ updates to `architecture.md`) |
-| 4 | Implementation Planning | `impl-planner` | `impl-plan.md` |
-| 5 | Implementation | `implementer` | source code, tests |
-| 6 | Code Review | `code-reviewer` | `code-review-report.md` |
-| 7 | Verification | `verifier` | `verification-report.md` |
-| 8 | PR Preparation | `pr-preparer` | PR description, changelog entry, risk summary |
+| #   | Stage                   | Subagent               | Produces                                            |
+| --- | ----------------------- | ---------------------- | --------------------------------------------------- |
+| 1   | Requirements            | `requirements-analyst` | `requirements.md`                                   |
+| 2   | Architecture            | `architect`            | `architecture.md`                                   |
+| 3   | Design Review           | `design-reviewer`      | `design-review.md` (+ updates to `architecture.md`) |
+| 4   | Implementation Planning | `impl-planner`         | `impl-plan.md`                                      |
+| 5   | Implementation          | `implementer`          | source code, tests                                  |
+| 6   | Code Review             | `code-reviewer`        | `code-review-report.md`                             |
+| 7   | Verification            | `verifier`             | `verification-report.md`                            |
+| 8   | PR Preparation          | `pr-preparer`          | PR description, changelog entry, risk summary       |
 
 ## Operating Rules
 

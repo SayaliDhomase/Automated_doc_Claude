@@ -1,6 +1,6 @@
 ---
-description: "Stage 8 — prepare the complete PR description, changelog entry, and risk summary; create the PR only with explicit authorization"
-argument-hint: "[optional: target branch name]"
+description: 'Stage 8 — prepare the complete PR description, changelog entry, and risk summary; create the PR only with explicit authorization'
+argument-hint: '[optional: target branch name]'
 allowed-tools: Task, Read, Write, Bash, Grep, Glob
 ---
 
@@ -12,6 +12,7 @@ allowed-tools: Task, Read, Write, Bash, Grep, Glob
 human-accepted exceptions). Optional `$ARGUMENTS` for the target branch.
 
 **Steps**:
+
 1. Confirm the verification gate is satisfied; if not, stop and report what's blocking.
 2. Delegate to the `pr-preparer` subagent to build: PR description (Summary, Changes Made,
    Test Evidence, Known Limitations, Reviewer Checklist), a `CHANGELOG.md` entry, a final

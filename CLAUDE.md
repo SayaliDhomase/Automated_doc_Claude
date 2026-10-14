@@ -49,7 +49,7 @@ command, or skill instructions.
 - Naming: descriptive, no abbreviations that aren't domain-standard. No commented-out code.
 - No speculative abstractions: build the adapter/interface only where the spec requires
   multiple implementations (sources, PR hosts). Don't generalize beyond that.
-- Comments explain *why*, never *what*. Most functions should have zero comments.
+- Comments explain _why_, never _what_. Most functions should have zero comments.
 
 ## 4. Security Rules
 
@@ -97,7 +97,7 @@ by the commands in `.claude/commands/`. Hard rules, applicable to every stage:
     it.
   - **"Not Specified"** — this field is out of scope for the sources consulted, or the
     template field doesn't apply to this project type.
-  These are never used interchangeably and never silently replaced with invented content.
+    These are never used interchangeably and never silently replaced with invented content.
 - The documentation-sync output must preserve the master template's original structure, field
   order, and headings exactly — only field values are populated.
 

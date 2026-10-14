@@ -24,6 +24,7 @@ before producing output.
 ## What You Must Produce
 
 Analyze the story for:
+
 - Functional requirements (numbered, testable)
 - Non-functional requirements (performance, security, reliability, usability, etc. — only ones
   the story actually implies, don't invent generic ones)

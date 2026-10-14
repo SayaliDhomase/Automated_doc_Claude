@@ -29,8 +29,8 @@ defined JSON contract. A failed run never corrupts or discards an existing valid
 3. **FR-3**: Extract technical facts from the source repository through a pluggable extractor
    interface. v1 ships one concrete extractor for Node.js/TypeScript projects, reading evidence
    from `package.json`, `tsconfig.json`, `README.md`, `Dockerfile`, and common CI config files
-   (e.g. `.github/workflows/*.yml`) where present. *(This specific evidence-file list is an
-   assumption, not literal story text — see Assumptions.)*
+   (e.g. `.github/workflows/*.yml`) where present. _(This specific evidence-file list is an
+   assumption, not literal story text — see Assumptions.)_
 4. **FR-4**: For every template field, resolve exactly one of: a value with traceable evidence
    (file/config entry it came from), `"Not Found"`, or `"Not Specified"` — see "Field
    Resolution Rule" below for the exact rule and a worked example.
@@ -48,8 +48,8 @@ defined JSON contract. A failed run never corrupts or discards an existing valid
 8. **FR-8**: Handle the following cases without ever crashing or producing misleading output:
    (a) **Tool-level failures** — a clear, specific error (CLI mode) or JSON error summary (CI
    mode), process exits non-zero: missing/unreadable template path, missing/inaccessible
-   source repository path, malformed/unparseable template. *(The malformed/unparseable-
-   template case is an assumption, not literal story text — see Assumptions.)* Every case in
+   source repository path, malformed/unparseable template. _(The malformed/unparseable-
+   template case is an assumption, not literal story text — see Assumptions.)_ Every case in
    FR-8(a) is also subject to **FR-10**: none of them may alter or remove an existing valid
    output file.
    (b) **Evidence-absence cases — not failures** — a normal successful run, exit 0: empty
@@ -85,12 +85,13 @@ defined JSON contract. A failed run never corrupts or discards an existing valid
     - **On failure**: `status` (`"failure"`), a stable `errorCode` identifying the failure
       category (e.g. `TEMPLATE_NOT_FOUND`, `REPO_NOT_FOUND`, `TEMPLATE_MALFORMED`), and an
       actionable `errorMessage`.
-    No other field is required to have a fixed shape in v1; additional diagnostic fields may be
-    added without being considered a breaking change as long as the fields above remain present.
+      No other field is required to have a fixed shape in v1; additional diagnostic fields may be
+      added without being considered a breaking change as long as the fields above remain present.
 
 ## Field Resolution Rule: "Not Found" vs. "Not Specified"
 
 **Rule**: resolution is determined per-extractor, per-field:
+
 - If the active extractor defines a lookup rule for a field but that rule finds no matching
   evidence in the source repository, the field resolves to **"Not Found."**
 - If the active extractor defines **no** lookup rule at all for a field — because the field
@@ -98,7 +99,7 @@ defined JSON contract. A failed run never corrupts or discards an existing valid
   **"Not Specified,"** regardless of repository content.
 
 **Safeguard against misuse**: "Not Specified" is only valid for a field the extractor
-*intentionally and structurally* cannot evidence — it must never be used as a shortcut to skip
+_intentionally and structurally_ cannot evidence — it must never be used as a shortcut to skip
 checking an evidence source the extractor is reasonably expected to examine. Each extractor's
 set of "Not Specified" fields must be **fixed and documented** at implementation time (in code
 and/or `architecture.md`), not decided dynamically per run based on what evidence happens to be
@@ -113,7 +114,7 @@ Team"** field asks an organizational/people question that no code artifact (`pac
 `tsconfig.json`, `README.md`, `Dockerfile`, CI config) reliably or structurally answers. The v1
 extractor therefore defines no lookup rule for "Owning Team" at all, so it must resolve to
 **"Not Specified"** on every run, regardless of whether the repository is populated or empty —
-in contrast to a field like "Databases," for which the extractor *does* define a rule (scanning
+in contrast to a field like "Databases," for which the extractor _does_ define a rule (scanning
 dependency manifests for known database client/driver packages) and which can legitimately
 resolve to either a found value or **"Not Found"** depending on what's actually in the repo.
 
@@ -146,7 +147,7 @@ checked at Stage 6 Code Review against the safeguard above.
    message or any log output. **This NFR requires the tool to implement this rejection logic
    itself** — it is not satisfied by, or a consequence of, the project's own
    `.claude/hooks/check-secrets.js` pre-tool-use hook, which only guards against secrets being
-   written into *this repository's own source* during development and has no effect on the
+   written into _this repository's own source_ during development and has no effect on the
    shipped tool's runtime behavior; see Out of Scope for the exact boundary of what
    secret-handling logic v1 must implement.
 4. **NFR-4 Extensibility**: adding a new stack's extractor requires only a new implementation
@@ -209,7 +210,7 @@ requirements and should be revisited at the Architecture stage:
   extractor should actually read.
 - Treating a malformed/unparseable template as its own distinct, explicitly handled error case
   (FR-8(a), AC-5) — the story's own "Suggested Acceptance Signals" mention a missing/unreadable
-  template *path*, not malformed template *content* as a separate case.
+  template _path_, not malformed template _content_ as a separate case.
 - The specific choice of "Owning Team" as the v1 extractor's example "Not Specified" field —
   the general safeguard policy around "Not Specified" is now human-confirmed (above), but this
   particular field choice is still an implementation-level pick to double-check at Architecture.
@@ -337,7 +338,7 @@ requirements and should be revisited at the Architecture stage:
   in scope).
 - Master template authored in a non-Markdown format (Word, Confluence) for v1.
 - A dedicated secret-scanning or redaction engine that inspects arbitrary content for
-  credential-shaped patterns (e.g. entropy analysis, or scanning *extracted repository content*
+  credential-shaped patterns (e.g. entropy analysis, or scanning _extracted repository content_
   itself for leaked secrets) is out of scope for v1. What **is** in scope, and must be
   implemented by the tool itself: rejecting secret-shaped CLI flags by name and failing closed
   on unrecognized flags (NFR-3), and never writing environment-sourced secret values into
