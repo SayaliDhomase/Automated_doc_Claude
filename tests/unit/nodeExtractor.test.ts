@@ -6,6 +6,7 @@ const FIXTURES = path.resolve(__dirname, '../fixtures');
 const POPULATED = path.join(FIXTURES, 'populated-repo');
 const PARTIAL = path.join(FIXTURES, 'partial-repo');
 const EMPTY = path.join(FIXTURES, 'empty-repo');
+const STRING_BIN = path.join(FIXTURES, 'string-bin-repo');
 
 describe('Node.js/TypeScript Extractor', () => {
   const extractor = createNodejsExtractor();
@@ -133,6 +134,24 @@ describe('Node.js/TypeScript Extractor', () => {
       expect(extractor.lookup('Entry Point', PARTIAL)).toEqual({ status: 'not-found' });
       expect(extractor.lookup('Deployment Target', PARTIAL)).toEqual({ status: 'not-found' });
       expect(extractor.lookup('CI/CD Pipeline', PARTIAL)).toEqual({ status: 'not-found' });
+    });
+  });
+
+  describe('against a package.json with a string-form "bin" (npm single-executable convention)', () => {
+    it('resolves Entry Point to the string bin path', () => {
+      expect(extractor.lookup('Entry Point', STRING_BIN)).toEqual({
+        status: 'found',
+        value: './cli.js',
+        evidence: 'package.json#bin',
+      });
+    });
+
+    it('resolves Exposed CLI Commands to the package name, per npm convention', () => {
+      expect(extractor.lookup('Exposed CLI Commands', STRING_BIN)).toEqual({
+        status: 'found',
+        value: 'single-bin-tool',
+        evidence: 'package.json#bin',
+      });
     });
   });
 

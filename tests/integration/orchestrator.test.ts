@@ -1,11 +1,11 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, existsSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { runSync } from '../../src/core/orchestrator.js';
 import { clearExtractors, registerExtractor } from '../../src/core/extraction/extractor.js';
 import { createNodejsExtractor } from '../../src/integrations/extractors/nodejs/index.js';
-import { Config } from '../../src/core/types.js';
+import { Config, Extractor } from '../../src/core/types.js';
 
 const FIXTURES = path.resolve(__dirname, '../fixtures');
 const MASTER_TEMPLATE = path.join(FIXTURES, 'master-template.md');
@@ -126,5 +126,32 @@ describe('runSync', () => {
     const config = baseConfig({ templatePath: badTemplatePath });
     const result = await runSync(config);
     expect(result.status).toBe('failure');
+  });
+
+  it('reports OUTPUT_VALIDATION_FAILED and writes nothing if a misbehaving extractor produces an invalid manifest', async () => {
+    // A deliberately broken extractor: claims "found" but supplies no
+    // evidence, which Output Validator must catch (AC-6) before anything is
+    // written - proving this safety net works even though no real extractor
+    // in this codebase is expected to trigger it.
+    const brokenExtractor: Extractor = {
+      name: 'broken-test-extractor',
+      notSpecifiedFields: new Set(),
+      canHandle: () => true,
+      lookup: () => ({ status: 'found', value: 'x', evidence: '' }),
+    };
+    clearExtractors();
+    registerExtractor(() => brokenExtractor);
+
+    try {
+      const config = baseConfig();
+      const result = await runSync(config);
+      expect(result).toEqual(
+        expect.objectContaining({ status: 'failure', errorCode: 'OUTPUT_VALIDATION_FAILED' }),
+      );
+      expect(existsSync(config.outputPath)).toBe(false);
+    } finally {
+      clearExtractors();
+      registerExtractor(createNodejsExtractor);
+    }
   });
 });

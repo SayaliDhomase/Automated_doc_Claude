@@ -107,8 +107,10 @@ export function createNodejsExtractor(): Extractor {
           if (pkg?.main && pkg.main.trim()) {
             return { status: 'found', value: pkg.main, evidence: 'package.json#main' };
           }
-          if (pkg?.bin && typeof pkg.bin === 'object') {
-            const first = Object.values(pkg.bin)[0];
+          if (pkg?.bin) {
+            // npm allows `bin` as either a single string (the package's one
+            // executable) or a map of command name -> path.
+            const first = typeof pkg.bin === 'string' ? pkg.bin : Object.values(pkg.bin).sort()[0];
             if (first) return { status: 'found', value: first, evidence: 'package.json#bin' };
           }
           return { status: 'not-found' };
@@ -147,10 +149,22 @@ export function createNodejsExtractor(): Extractor {
         }
 
         case 'Exposed CLI Commands': {
-          if (pkg?.bin && typeof pkg.bin === 'object') {
-            const names = Object.keys(pkg.bin).sort((a, b) => a.localeCompare(b));
-            if (names.length > 0) {
-              return { status: 'found', value: names.join(', '), evidence: 'package.json#bin' };
+          if (pkg?.bin) {
+            // A string `bin` names a single executable after the package's
+            // own name, per npm convention; an object `bin` maps each
+            // command name to its path.
+            if (typeof pkg.bin === 'string' && pkg.name) {
+              return { status: 'found', value: pkg.name, evidence: 'package.json#bin' };
+            }
+            if (typeof pkg.bin === 'object') {
+              const names = Object.keys(pkg.bin).sort((a, b) => a.localeCompare(b));
+              if (names.length > 0) {
+                return {
+                  status: 'found',
+                  value: names.join(', '),
+                  evidence: 'package.json#bin',
+                };
+              }
             }
           }
           return { status: 'not-found' };
