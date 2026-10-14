@@ -12,12 +12,12 @@ technical application manifest ready for review.
 
 ## Status
 
-This pipeline framework (agents, commands, skills, hooks, MCP docs) is scaffolded and
-functional. The documentation-sync application itself (`src/core`, `src/integrations`) is
-built by running the pipeline's own Stages 1–7 against a real or sample user story — see
-"Running the Pipeline" below. No Jira/Confluence/GitHub MCP server or `gh` auth is configured
-in this environment yet; see [Integrations](#integrations) for how the pipeline behaves until
-one is.
+All 8 pipeline stages have been run end to end against the Automated Technical Documentation
+Sync v1 user story: `requirements.md` through `verification-report.md` are complete, and the
+application itself (`src/core`, `src/integrations`, `src/cli`) is implemented with 72 passing
+tests (95%+ statement coverage). No Jira/Confluence/GitHub MCP server or `gh` auth is
+configured in this environment; see [Integrations](#integrations) for how the pipeline behaves
+until one is.
 
 ## Installation
 
@@ -26,7 +26,7 @@ Requires Node.js ≥ 20.
 ```bash
 npm install
 npm run typecheck   # verify the toolchain is wired correctly
-npm run test        # run the (currently empty, pending Stage 5) test suite
+npm run test        # run the 72-test unit/integration suite
 ```
 
 Copy `.env.example` to `.env` and fill in only the integrations you actually have credentials

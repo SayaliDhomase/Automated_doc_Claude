@@ -1,7 +1,11 @@
 <!--
-Prepared by Stage 8 (PR Preparation). gh CLI is not installed and no git
-remote is configured in this environment, so this PR cannot be created
-automatically - see "Remaining Manual Steps" at the end of this file.
+Prepared by Stage 8 (PR Preparation) for the capstone submission repository
+sanjanapapanna-oss/Automated-Documentation-Sync-Capstone. Target: this branch
+(feature/documentation-sync) into main, where main is the original scaffold
+commit (1d90d4c) and this branch is that same scaffold plus all 8 SDLC-stage
+work, pushed without rewriting any existing commit. gh CLI auth is still
+pending on the human side - see "Remaining Manual Steps" at the end of this
+file for the one command left to run.
 -->
 
 ## Summary
@@ -16,6 +20,7 @@ repository's own evidence, never inventing values, and distinguishing `"Not Foun
 ## Changes Made
 
 **Pipeline framework** (`.claude/`, `mcp/`, `CLAUDE.md`, tooling configs):
+
 - 9 subagents (orchestrator + one per SDLC stage), 8 slash commands, 6 skills with templates,
   3 hooks (secret-scan, format-on-write, verification-gate) — the reusable scaffolding this
   entire delivery ran through.
@@ -24,6 +29,7 @@ repository's own evidence, never inventing values, and distinguishing `"Not Foun
 
 **Stage artifacts** (`requirements.md`, `architecture.md`, `design-review.md`, `impl-plan.md`,
 `code-review-report.md`, `verification-report.md`):
+
 - `requirements.md` — 11 FRs, 5 NFRs, 15 ACs, revised through 3 rounds including a
   self-caught contradiction fix (empty/partial repositories were wrongly classified as
   failures in an earlier draft; corrected before implementation began).
@@ -35,6 +41,7 @@ repository's own evidence, never inventing values, and distinguishing `"Not Foun
 - `verification-report.md` — every mandatory check's real command output.
 
 **Application source** (`src/`, 13 files):
+
 - `src/core/` — template parser, extractor interface/registry, field resolver, output
   renderer, output validator, safe output writer, config loader, sync orchestrator, shared
   types.
@@ -42,6 +49,7 @@ repository's own evidence, never inventing values, and distinguishing `"Not Foun
 - `src/cli/` — the CLI entry point and human/CI presenters.
 
 **Tests and fixtures** (`tests/`, 25 files):
+
 - 72 unit and integration tests (95.36% statement coverage), including a subprocess-level
   regression test for the one Critical bug found in Code Review.
 - Fixtures for populated/empty/partial repositories, malformed/duplicate-field templates, and
@@ -52,8 +60,13 @@ production dependencies during Code Review; added `@vitest/coverage-v8`), `tscon
 `tsconfig.eslint.json` (added so typed linting actually covers `tests/`), `.eslintrc.cjs`,
 `vitest.config.ts`.
 
-Full per-commit breakdown: 10 commits, `9,769` lines added across `92` files (see "Commits
-Included" below).
+**Also in this PR**: a fix for an unresolved-merge-conflict-marker corruption discovered in
+`README.md` while preparing this submission (it only ever existed in a merge commit on the
+original repository's `main`, never on this branch's own history) — this branch is built from
+the clean pre-merge commit, plus one new commit resolving a Prettier formatting drift in two
+report files. See "Commits Included" below for the exact list.
+
+Full per-commit breakdown: 11 commits, `92`+ files touched (see "Commits Included" below).
 
 ## Test Evidence
 
@@ -66,7 +79,7 @@ ESLint                 : Pass (eslint . --max-warnings=0, no output)
 Prettier format check  : Pass ("All matched files use Prettier code style!")
 Production build       : Pass (dist/ emitted, no errors)
 Unit + integration tests: 72/72 passed, 0 failed, 0 skipped (12 test files)
-Coverage (src/core + src/integrations): 95.36% statements, 89.38% branches, 100% functions
+Coverage (src/core + src/integrations): 95.35% statements, 89.38% branches, 100% functions
 npm audit               : 15 vulnerabilities, all in dev-only tooling (eslint 8 / vitest 1
                           chains), zero reachable from the shipped tool's own runtime
                           dependency (commander only)
@@ -132,19 +145,25 @@ b22f7f0 Implement Stage 5: Automated Technical Documentation Sync v1
 4c05243 Complete Stage 6 code review, fix 2 findings, document 1 as deferred
 bd2fc28 Add subprocess regression test, coverage tooling, and a string-bin fix
 e0d3e4e Add Stage 7 verification report
+ad60f07 Complete Stage 8: prepare PR artifacts (no gh CLI, no remote configured)
+<plus one new commit on this branch: README accuracy pass + Prettier formatting fix>
 ```
+
+(`main` on this repository is `1d90d4c` only — the scaffold commit — so the diff this PR
+actually shows is everything from `4464abe` onward: all 8 SDLC stages.)
 
 ## Files Changed
 
-`92 files changed, 9,769 insertions(+)` — full `git diff --stat` available in the repository;
-grouped summary in "Changes Made" above.
+92+ files across the full diff — full `git diff --stat main...feature/documentation-sync` is
+available in the repository; grouped summary in "Changes Made" above.
 
-## Remaining Manual Steps (no `gh` CLI, no git remote configured)
+## Remaining Manual Steps
 
-1. Install and authenticate the GitHub CLI (`gh auth login`), or configure a GitHub MCP server
-   per `mcp/README.md`.
-2. Add a remote: `git remote add origin <your-repo-url>`.
-3. Push this branch: `git push -u origin main` (or a feature branch, if you'd rather not push
-   directly to `main`).
-4. Open the PR: `gh pr create --title "Automated Technical Documentation Sync v1" --body-file
-   pr-description.md` (or paste this file's content into GitHub's web UI).
+`gh` CLI install + `gh auth login` is in progress on the human's side; once authenticated, the
+PR is created with:
+
+```
+gh pr create --repo sanjanapapanna-oss/Automated-Documentation-Sync-Capstone \
+  --base main --head feature/documentation-sync \
+  --title "Automated Technical Documentation Sync v1" --body-file pr-description.md
+```

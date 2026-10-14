@@ -5,12 +5,12 @@ Every result below comes from a command actually run in this session, on this ma
 
 ## 1. Static Analysis
 
-| Check | Command | Result |
-|---|---|---|
-| TypeScript typecheck | `npm run typecheck` (`tsc -p tsconfig.json --noEmit`) | **Pass** — no output, no errors |
-| ESLint (typed linting, `src/` + `tests/`) | `npm run lint` (`eslint . --max-warnings=0`) | **Pass** — no errors, no warnings |
-| Prettier formatting | `npm run format:check` (`prettier --check .`) | **Pass** — "All matched files use Prettier code style!" |
-| Production build | `npm run build` (`tsc -p tsconfig.json`) | **Pass** — `dist/` emitted with no errors |
+| Check                                     | Command                                               | Result                                                  |
+| ----------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------- |
+| TypeScript typecheck                      | `npm run typecheck` (`tsc -p tsconfig.json --noEmit`) | **Pass** — no output, no errors                         |
+| ESLint (typed linting, `src/` + `tests/`) | `npm run lint` (`eslint . --max-warnings=0`)          | **Pass** — no errors, no warnings                       |
+| Prettier formatting                       | `npm run format:check` (`prettier --check .`)         | **Pass** — "All matched files use Prettier code style!" |
+| Production build                          | `npm run build` (`tsc -p tsconfig.json`)              | **Pass** — `dist/` emitted with no errors               |
 
 ## 2. Unit and Integration Tests
 
@@ -39,34 +39,34 @@ format:check → build → test in that order).
 
 ### Coverage (`npx vitest run --coverage`, v8 provider)
 
-| Scope | Statements | Branches | Functions |
-|---|---|---|---|
-| All of `src/core` + `src/integrations` | 95.36% | 89.38% | 100% |
+| Scope                                  | Statements | Branches | Functions |
+| -------------------------------------- | ---------- | -------- | --------- |
+| All of `src/core` + `src/integrations` | 95.36%     | 89.38%   | 100%      |
 
 Per-file detail: `extractor.ts`, `safeWriter.ts`, `renderer.ts`, `fieldResolver.ts` are 100%
 across the board. The remaining uncovered lines are documented, deliberate exceptions — see
-"Known Limitations" below; none represent an untested *reachable* code path.
+"Known Limitations" below; none represent an untested _reachable_ code path.
 
 ## 3. Documentation-Sync-Specific Cases (traced to `requirements.md`)
 
-| Case | Requirement | Evidence |
-|---|---|---|
-| Successful sync (populated repo) | AC-1 | `orchestrator.test.ts`, `cliBinary.test.ts` — real manifest produced, structure preserved, verified by direct file read |
-| Empty repository | AC-2, FR-8(b) | `orchestrator.test.ts`, `nodeExtractor.test.ts` — `status: 'success'`, all evidence-dependent fields `"Not Found"` |
-| Partial repository (mixed) | AC-15 | `orchestrator.test.ts`, `nodeExtractor.test.ts` — real mix of found/`"Not Found"` in one run |
-| Missing/unreadable template | AC-3 | `orchestrator.test.ts`, `cliBinary.test.ts` — `TEMPLATE_NOT_FOUND`, non-zero exit, no output written |
-| Missing/inaccessible repository | AC-4 | `orchestrator.test.ts` — `REPO_NOT_FOUND` |
-| Malformed template | AC-5 | `templateParser.test.ts`, `orchestrator.test.ts` — `TEMPLATE_MALFORMED` for both no-fields and duplicate-field cases |
-| No invented values | AC-6 | `outputValidator.test.ts` — rejects a "found" field with no evidence pointer |
-| Byte-identical re-run | AC-7, FR-6 | `orchestrator.test.ts` — two consecutive runs compared byte-for-byte equal |
-| CI JSON exit codes | AC-8 | `cli.test.ts`, `cliBinary.test.ts` — exit 0 on success (even with unresolved fields), exit 1 on failure |
-| Extractor extensibility | AC-9 | `extractorRegistry.test.ts` — a stub second extractor proves selection logic works with no core-module changes |
-| Secret handling | AC-10 (a–d) | `config.test.ts`, `cli.test.ts` — ordinary args pass through; secret-shaped and unrecognized flags rejected without the value ever appearing in output |
-| Output completeness | AC-11 | `outputValidator.test.ts` — every field is value/"Not Found"/"Not Specified", never blank |
-| "Not Specified" worked example | AC-12 | `nodeExtractor.test.ts`, `orchestrator.test.ts` — "Owning Team" is `"Not Specified"` in both populated and empty repos |
-| Safe output replacement | AC-13 (a–c) | `safeWriter.test.ts`, `orchestrator.test.ts` — pre-existing manifest preserved and temp file cleaned up when replacement persistently fails (simulated lock, 3 retries confirmed) |
-| CI JSON schema conformance | AC-14 | `presenters.test.ts` — exact FR-11 field set verified on both success and failure shapes |
-| Partial repository (dedicated) | AC-15 | see above |
+| Case                             | Requirement   | Evidence                                                                                                                                                                          |
+| -------------------------------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Successful sync (populated repo) | AC-1          | `orchestrator.test.ts`, `cliBinary.test.ts` — real manifest produced, structure preserved, verified by direct file read                                                           |
+| Empty repository                 | AC-2, FR-8(b) | `orchestrator.test.ts`, `nodeExtractor.test.ts` — `status: 'success'`, all evidence-dependent fields `"Not Found"`                                                                |
+| Partial repository (mixed)       | AC-15         | `orchestrator.test.ts`, `nodeExtractor.test.ts` — real mix of found/`"Not Found"` in one run                                                                                      |
+| Missing/unreadable template      | AC-3          | `orchestrator.test.ts`, `cliBinary.test.ts` — `TEMPLATE_NOT_FOUND`, non-zero exit, no output written                                                                              |
+| Missing/inaccessible repository  | AC-4          | `orchestrator.test.ts` — `REPO_NOT_FOUND`                                                                                                                                         |
+| Malformed template               | AC-5          | `templateParser.test.ts`, `orchestrator.test.ts` — `TEMPLATE_MALFORMED` for both no-fields and duplicate-field cases                                                              |
+| No invented values               | AC-6          | `outputValidator.test.ts` — rejects a "found" field with no evidence pointer                                                                                                      |
+| Byte-identical re-run            | AC-7, FR-6    | `orchestrator.test.ts` — two consecutive runs compared byte-for-byte equal                                                                                                        |
+| CI JSON exit codes               | AC-8          | `cli.test.ts`, `cliBinary.test.ts` — exit 0 on success (even with unresolved fields), exit 1 on failure                                                                           |
+| Extractor extensibility          | AC-9          | `extractorRegistry.test.ts` — a stub second extractor proves selection logic works with no core-module changes                                                                    |
+| Secret handling                  | AC-10 (a–d)   | `config.test.ts`, `cli.test.ts` — ordinary args pass through; secret-shaped and unrecognized flags rejected without the value ever appearing in output                            |
+| Output completeness              | AC-11         | `outputValidator.test.ts` — every field is value/"Not Found"/"Not Specified", never blank                                                                                         |
+| "Not Specified" worked example   | AC-12         | `nodeExtractor.test.ts`, `orchestrator.test.ts` — "Owning Team" is `"Not Specified"` in both populated and empty repos                                                            |
+| Safe output replacement          | AC-13 (a–c)   | `safeWriter.test.ts`, `orchestrator.test.ts` — pre-existing manifest preserved and temp file cleaned up when replacement persistently fails (simulated lock, 3 retries confirmed) |
+| CI JSON schema conformance       | AC-14         | `presenters.test.ts` — exact FR-11 field set verified on both success and failure shapes                                                                                          |
+| Partial repository (dedicated)   | AC-15         | see above                                                                                                                                                                         |
 
 Every acceptance criterion in `requirements.md` (AC-1 through AC-15) has at least one passing
 automated test. "Inaccessible integration"/"API failure" from the generic test-strategy
@@ -142,7 +142,7 @@ before/after regression demonstration.
   by `requirements.md`'s own worked example — this is a property of there being only one
   extractor whose fixed Not-Specified set is intentionally small, not a test gap.
 - **No CI pipeline** runs these checks automatically on this repository itself (as opposed to
-  the CI-hookable `--ci` mode the *tool* provides to its own users) — `requirements.md`'s
+  the CI-hookable `--ci` mode the _tool_ provides to its own users) — `requirements.md`'s
   Out-of-Scope section explicitly excludes authoring one for v1.
 
 ## Overall Status
