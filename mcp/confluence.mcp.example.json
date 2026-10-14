@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "confluence": {
+      "comment": "Example only. Replace with the actual Confluence/Atlassian MCP server package you install, and verify its real tool names before relying on them in agent instructions.",
+      "command": "npx",
+      "args": ["-y", "@example-org/confluence-mcp-server"],
+      "env": {
+        "CONFLUENCE_BASE_URL": "${CONFLUENCE_BASE_URL}",
+        "CONFLUENCE_EMAIL": "${CONFLUENCE_EMAIL}",
+        "CONFLUENCE_API_TOKEN": "${CONFLUENCE_API_TOKEN}"
+      }
+    }
+  }
+}

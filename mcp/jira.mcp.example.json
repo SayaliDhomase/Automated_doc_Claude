@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "jira": {
+      "comment": "Example only. Replace with the actual Jira/Atlassian MCP server package you install, and verify its real tool names before relying on them in agent instructions.",
+      "command": "npx",
+      "args": ["-y", "@example-org/jira-mcp-server"],
+      "env": {
+        "JIRA_BASE_URL": "${JIRA_BASE_URL}",
+        "JIRA_EMAIL": "${JIRA_EMAIL}",
+        "JIRA_API_TOKEN": "${JIRA_API_TOKEN}"
+      }
+    }
+  }
+}
