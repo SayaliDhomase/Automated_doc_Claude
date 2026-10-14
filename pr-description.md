@@ -1,13 +1,3 @@
-<!--
-Prepared by Stage 8 (PR Preparation) for the capstone submission repository
-sanjanapapanna-oss/Automated-Documentation-Sync-Capstone. Target: this branch
-(feature/documentation-sync) into main, where main is the original scaffold
-commit (1d90d4c) and this branch is that same scaffold plus all 8 SDLC-stage
-work, pushed without rewriting any existing commit. gh CLI auth is still
-pending on the human side - see "Remaining Manual Steps" at the end of this
-file for the one command left to run.
--->
-
 ## Summary
 
 Builds a complete, reusable Agentic SDLC pipeline on Claude Code (9 subagents, 8 slash
@@ -50,7 +40,7 @@ repository's own evidence, never inventing values, and distinguishing `"Not Foun
 
 **Tests and fixtures** (`tests/`, 25 files):
 
-- 72 unit and integration tests (95.36% statement coverage), including a subprocess-level
+- 72 unit and integration tests (95.35% statement coverage), including a subprocess-level
   regression test for the one Critical bug found in Code Review.
 - Fixtures for populated/empty/partial repositories, malformed/duplicate-field templates, and
   the npm string-form `bin` edge case.
@@ -62,11 +52,13 @@ production dependencies during Code Review; added `@vitest/coverage-v8`), `tscon
 
 **Also in this PR**: a fix for an unresolved-merge-conflict-marker corruption discovered in
 `README.md` while preparing this submission (it only ever existed in a merge commit on the
-original repository's `main`, never on this branch's own history) — this branch is built from
-the clean pre-merge commit, plus one new commit resolving a Prettier formatting drift in two
-report files. See "Commits Included" below for the exact list.
+original repository's `main`, never on this branch's own history — this branch is built from
+the clean pre-merge commit), plus a Prettier formatting fix for two report files, both in
+commit `113c979`.
 
-Full per-commit breakdown: 11 commits, `92`+ files touched (see "Commits Included" below).
+Full per-commit breakdown: **11 commits, 72 files changed, +8,059/−75 lines** — verified via
+`git diff --shortstat 1d90d4c feature/documentation-sync` (see "Commits Included" below for
+the exact list).
 
 ## Test Evidence
 
@@ -134,8 +126,11 @@ commands executed directly in this session.
 
 ## Commits Included
 
+11 commits, `1d90d4c..113c979` (`main` on this repository is `1d90d4c` — the scaffold commit
+— so this is everything from `4464abe` onward: all 8 SDLC stages, plus the README/formatting
+fix):
+
 ```
-1d90d4c Scaffold Agentic SDLC pipeline framework
 4464abe Add Stage 1 requirements for Automated Technical Documentation Sync v1
 0f2d01e Add Stage 2 architecture for Automated Technical Documentation Sync v1
 7128ef8 Complete Stage 3 design review, fix 4 findings, document 1 accepted risk
@@ -146,24 +141,10 @@ b22f7f0 Implement Stage 5: Automated Technical Documentation Sync v1
 bd2fc28 Add subprocess regression test, coverage tooling, and a string-bin fix
 e0d3e4e Add Stage 7 verification report
 ad60f07 Complete Stage 8: prepare PR artifacts (no gh CLI, no remote configured)
-<plus one new commit on this branch: README accuracy pass + Prettier formatting fix>
+113c979 Update README accuracy and PR description for capstone submission
 ```
-
-(`main` on this repository is `1d90d4c` only — the scaffold commit — so the diff this PR
-actually shows is everything from `4464abe` onward: all 8 SDLC stages.)
 
 ## Files Changed
 
-92+ files across the full diff — full `git diff --stat main...feature/documentation-sync` is
-available in the repository; grouped summary in "Changes Made" above.
-
-## Remaining Manual Steps
-
-`gh` CLI install + `gh auth login` is in progress on the human's side; once authenticated, the
-PR is created with:
-
-```
-gh pr create --repo sanjanapapanna-oss/Automated-Documentation-Sync-Capstone \
-  --base main --head feature/documentation-sync \
-  --title "Automated Technical Documentation Sync v1" --body-file pr-description.md
-```
+**72 files changed, +8,059/−75 lines** (`git diff --shortstat 1d90d4c feature/documentation-sync`,
+cross-checked against GitHub's own compare API) — grouped summary in "Changes Made" above.
