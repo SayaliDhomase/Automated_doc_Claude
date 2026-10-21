@@ -1,5 +1,7 @@
 # Automated Documentation Sync
 
+[![CI](https://github.com/sanjanapapanna-oss/Automated-Documentation-Sync-Capstone/actions/workflows/ci.yml/badge.svg)](https://github.com/sanjanapapanna-oss/Automated-Documentation-Sync-Capstone/actions/workflows/ci.yml)
+
 An Agentic SDLC Pipeline, built entirely from Claude Code's native primitives, that takes a
 project from a raw user story through requirements, architecture, design review,
 implementation planning, implementation, code review, verification, and PR preparation — with
